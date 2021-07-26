@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from "@solana/web3.js"
+import { Connection } from "@solana/web3.js"
 import {
   Config,
   getMultipleAccounts,
@@ -24,8 +24,10 @@ const CLUSTER_URLS = [
     websocket: "https://api.devnet.solana.com",
   },
 ]
-
-export type CLUSTER_TYPE = "devnet" | "mainnet-beta"
+type CLUSTER_TYPE = "devnet" | "mainnet-beta"
+const cluster = (process.env.CLUSTER || "devnet") as CLUSTER_TYPE
+const SECONDS = 1000
+const statsInterval = 10 * SECONDS
 
 const loadPerpMarkets = async (connection, groupConfig: GroupConfig) => {
   const perpMarketPks = groupConfig.perpMarkets.map((p) => p.publicKey)
@@ -39,7 +41,7 @@ const loadPerpMarkets = async (connection, groupConfig: GroupConfig) => {
   })
 }
 
-async function fetchAndPersistStats(cluster: CLUSTER_TYPE) {
+async function main() {
   const clusterUrl = CLUSTER_URLS.find((c) => c.name === cluster)
   if (!clusterUrl) return
   const connection = new Connection(clusterUrl.url, "singleGossip")
@@ -102,6 +104,8 @@ async function fetchAndPersistStats(cluster: CLUSTER_TYPE) {
   } catch (err) {
     console.log("failed to insert spot stats", `${err}`)
   }
+
+  setTimeout(main, statsInterval)
 }
 
-export default fetchAndPersistStats
+main()
