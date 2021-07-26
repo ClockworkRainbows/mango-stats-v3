@@ -2,9 +2,9 @@ import { Sequelize, DataTypes } from "sequelize"
 import db from "./index"
 
 const PerpMarketStats = db.sequelize.define(
-  "perp_market_stats",
+  "spot_market_stats",
   {
-    symbol: { type: DataTypes.STRING, allowNull: false },
+    name: { type: DataTypes.STRING, allowNull: false },
     totalDeposits: {
       type: DataTypes.DECIMAL,
       get() {
@@ -30,6 +30,13 @@ const PerpMarketStats = db.sequelize.define(
       type: DataTypes.DECIMAL,
       get() {
         const value = this.getDataValue("borrowRate")
+        return value === null ? null : parseFloat(value)
+      },
+    },
+    baseOraclePrice: {
+      type: DataTypes.DECIMAL,
+      get() {
+        const value = this.getDataValue("baseOraclePrice")
         return value === null ? null : parseFloat(value)
       },
     },

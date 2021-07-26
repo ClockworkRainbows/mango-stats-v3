@@ -1,3 +1,5 @@
-import fetchAndPersistStats from '../lib/fetchStats';
+import fetchAndPersistStats, { CLUSTER_TYPE } from "../lib/fetchStats"
 
-fetchAndPersistStats();
+const cluster = (process.env.CLUSTER || "devnet") as CLUSTER_TYPE
+
+fetchAndPersistStats(cluster)
