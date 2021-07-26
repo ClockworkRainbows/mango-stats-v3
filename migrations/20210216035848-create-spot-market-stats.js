@@ -7,9 +7,6 @@ module.exports = {
         name: {
           type: Sequelize.STRING,
         },
-        publicKey: {
-          type: Sequelize.STRING,
-        },
         mangoGroup: {
           type: Sequelize.STRING,
         },

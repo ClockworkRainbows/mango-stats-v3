@@ -65,7 +65,6 @@ async function main() {
     return {
       time: new Date(),
       name: groupConfig.spotMarkets[index].name,
-      publicKey: spotMarket.publicKey.toString(),
       mangoGroup: groupConfig.name,
       totalDeposits: totalDeposits.toNumber(),
       totalBorrows: totalBorrows.toNumber(),
@@ -89,7 +88,6 @@ async function main() {
     return {
       time: new Date(),
       name: groupConfig.perpMarkets[index].name,
-      publicKey: perpMarket.publicKey.toString(),
       mangoGroup: groupConfig.name,
       longFunding: perpMarket.longFunding.toNumber(),
       shortFunding: perpMarket.shortFunding.toNumber(),

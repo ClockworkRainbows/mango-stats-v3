@@ -41,7 +41,6 @@ const PerpMarketStats = db.sequelize.define(
       },
     },
     mangoGroup: DataTypes.STRING,
-    publicKey: DataTypes.STRING,
     utilization: DataTypes.DECIMAL,
     time: DataTypes.DATE,
   },
