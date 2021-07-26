@@ -27,7 +27,13 @@ const CLUSTER_URLS = [
 type CLUSTER_TYPE = "devnet" | "mainnet-beta"
 const cluster = (process.env.CLUSTER || "devnet") as CLUSTER_TYPE
 const SECONDS = 1000
-const statsInterval = 10 * SECONDS
+const PERP_INTERVAL = 10 * SECONDS
+const SPOT_INTERVAL = 60 * SECONDS
+const clusterUrl = CLUSTER_URLS.find((c) => c.name === cluster)
+const connection = new Connection(clusterUrl.url, "singleGossip")
+const config = new Config(IDS)
+const groupConfig = config.getGroup(cluster, "mango_test_v3.8")
+const client = new MangoClient(connection, groupConfig.mangoProgramId)
 
 const loadPerpMarkets = async (connection, groupConfig: GroupConfig) => {
   const perpMarketPks = groupConfig.perpMarkets.map((p) => p.publicKey)
@@ -41,23 +47,9 @@ const loadPerpMarkets = async (connection, groupConfig: GroupConfig) => {
   })
 }
 
-async function main() {
-  const clusterUrl = CLUSTER_URLS.find((c) => c.name === cluster)
-  if (!clusterUrl) return
-  const connection = new Connection(clusterUrl.url, "singleGossip")
-  const config = new Config(IDS)
-
-  const groupConfig = config.getGroup(cluster, "mango_test_v3.8")
-  console.log("1")
-
-  const client = new MangoClient(connection, groupConfig.mangoProgramId)
-  console.log("2")
-
+async function fetchSpotStats() {
   const mangoGroup = await client.getMangoGroup(groupConfig.publicKey)
-  console.log("3")
-
   await mangoGroup.loadRootBanks(connection)
-  console.log("4")
 
   const spotMarketStats = groupConfig.spotMarkets.map((spotMarket, index) => {
     const totalDeposits = mangoGroup.getUiTotalDeposit(index)
@@ -79,8 +71,12 @@ async function main() {
     console.log("spot stats inserted")
   } catch (err) {
     console.log("failed to insert spot stats", `${err}`)
+  } finally {
+    setTimeout(fetchSpotStats, SPOT_INTERVAL)
   }
+}
 
+async function fetchPerpStats() {
   const perpMarkets = await loadPerpMarkets(connection, groupConfig)
   console.log("6")
 
@@ -101,9 +97,14 @@ async function main() {
     console.log("perp stats inserted")
   } catch (err) {
     console.log("failed to insert spot stats", `${err}`)
+  } finally {
+    setTimeout(fetchPerpStats, PERP_INTERVAL)
   }
+}
 
-  setTimeout(main, statsInterval)
+async function main() {
+  fetchPerpStats()
+  fetchSpotStats()
 }
 
 main()
