@@ -1,0 +1,15 @@
+{
+  "compilerOptions":
+    {
+      "allowJs": true,
+      "target": "es2019",
+      "module": "commonjs",
+      "outDir": "dist",
+      "sourceMap": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true, 
+    },
+  "skipLibCheck": true,
+  "include": ["src/**/*.ts", "lib/**/*.ts", "config"],
+  "exclude": ["node_modules"],
+}
