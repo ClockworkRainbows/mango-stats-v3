@@ -49,6 +49,8 @@ const loadPerpMarkets = async (connection, groupConfig: GroupConfig) => {
 
 async function fetchSpotStats() {
   const mangoGroup = await client.getMangoGroup(groupConfig.publicKey)
+  const mangoCache = await mangoGroup.loadCache(connection)
+  // TODO: reduce calls in loadRootBanks
   await mangoGroup.loadRootBanks(connection)
 
   const spotMarketStats = groupConfig.spotMarkets.map((spotMarket, index) => {
@@ -63,7 +65,7 @@ async function fetchSpotStats() {
       depositRate: mangoGroup.getDepositRate(index).toNumber(),
       borrowRate: mangoGroup.getBorrowRate(index).toNumber(),
       utilization: totalDeposits.gt(I80F48.fromNumber(0)) ? totalBorrows.div(totalDeposits).toNumber() : 0,
-      baseOraclePrice: 0,
+      baseOraclePrice: mangoCache.priceCache[index].price.toNumber(),
     }
   })
   try {
@@ -77,6 +79,8 @@ async function fetchSpotStats() {
 }
 
 async function fetchPerpStats() {
+  const mangoGroup = await client.getMangoGroup(groupConfig.publicKey)
+  const mangoCache = await mangoGroup.loadCache(connection)
   const perpMarkets = await loadPerpMarkets(connection, groupConfig)
   console.log("6")
 
@@ -88,7 +92,7 @@ async function fetchPerpStats() {
       longFunding: perpMarket.longFunding.toNumber(),
       shortFunding: perpMarket.shortFunding.toNumber(),
       openInterest: perpMarket.openInterest.toNumber(),
-      baseOraclePrice: 0,
+      baseOraclePrice: mangoCache.priceCache[index].price.toNumber(),
     }
   })
 

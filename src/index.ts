@@ -10,44 +10,60 @@ const app = express()
 
 app.use(express.json(), cors())
 
-app.get("/", async (req, res) => {
+app.get("/spot", async (req, res) => {
   try {
-    const mangoGroup = (req.query.mangoGroup as string) || ""
-    let stats
-    if (mangoGroup === "BTC_ETH_USDT" || mangoGroup === "BTC_ETH_SOL_SRM_USDC") {
-      stats = await sequelize.query(
-        `SELECT time_bucket('60 minutes', time) AS "hourly", 
-          "symbol", 
+    const mangoGroup = req.query.mangoGroup as string
+    if (!mangoGroup) {
+      throw new Error("Missing mangoGroup param")
+    }
+
+    const stats = await sequelize.query(
+      `SELECT time_bucket('60 minutes', time) AS "hourly", 
+          "name", 
           avg("totalDeposits")::float AS "totalDeposits", 
           avg("totalBorrows")::float AS "totalBorrows", 
           avg("utilization")::float AS "utilization", 
           avg("depositInterest")::float AS "depositInterest", 
           avg("borrowInterest")::float AS "borrowInterest", 
           min("time") AS "time"
-        FROM mainnet_stats
+        FROM spot_market_stats
         WHERE time > current_date - interval '90' day AND "mangoGroup" = :mangoGroup
-        GROUP BY "hourly", "symbol"
+        GROUP BY "hourly", "name"
         ORDER BY "hourly" ASC;`,
-        {
-          replacements: { mangoGroup },
-          type: QueryTypes.SELECT,
-        }
-      )
-    } else {
-      stats = await PerpMarketStats.findAll({
-        order: [["time", "ASC"]],
-        where: { mangoGroup: { [Op.or]: [null, mangoGroup] } },
-      })
-    }
+      {
+        replacements: { mangoGroup },
+        type: QueryTypes.SELECT,
+      }
+    )
+
     res.send(stats)
   } catch (e) {
     console.log("Error inserting data", e)
   }
 })
 
-app.get("/current", async (req, res) => {
+app.get("/perp/funding_rate", async (req, res) => {
   try {
-    const stats = await PerpMarketStats.findAll({ limit: 3, order: [["time", "DESC"]] })
+    const market = req.query.market as string
+    if (!market) {
+      throw new Error("Missing mangoGroup param")
+    }
+
+    const stats = await sequelize.query(
+      `SELECT 
+          "longFunding", 
+          "shortFunding", 
+          "openInterest", 
+          "baseOraclePrice",
+          "time"
+        FROM perp_market_stats
+        WHERE time > NOW() - interval '1 hour' AND "name" = :market`,
+      {
+        replacements: { market },
+        type: QueryTypes.SELECT,
+      }
+    )
+
     res.send(stats)
   } catch (e) {
     console.log("Error inserting data", e)
