@@ -5,41 +5,13 @@ const PerpMarketStats = db.sequelize.define(
   "spot_market_stats",
   {
     name: { type: DataTypes.STRING, allowNull: false },
-    totalDeposits: {
-      type: DataTypes.DECIMAL,
-      get() {
-        const value = this.getDataValue("totalDeposits")
-        return value ? parseFloat(value) : null
-      },
-    },
-    totalBorrows: {
-      type: DataTypes.DECIMAL,
-      get() {
-        const value = this.getDataValue("totalBorrows")
-        return value ? parseFloat(value) : null
-      },
-    },
-    depositRate: {
-      type: DataTypes.DECIMAL,
-      get() {
-        const value = this.getDataValue("depositRate")
-        return value === null ? null : parseFloat(value)
-      },
-    },
-    borrowRate: {
-      type: DataTypes.DECIMAL,
-      get() {
-        const value = this.getDataValue("borrowRate")
-        return value === null ? null : parseFloat(value)
-      },
-    },
-    baseOraclePrice: {
-      type: DataTypes.DECIMAL,
-      get() {
-        const value = this.getDataValue("baseOraclePrice")
-        return value === null ? null : parseFloat(value)
-      },
-    },
+    totalDeposits: DataTypes.DECIMAL,
+    totalBorrows: DataTypes.DECIMAL,
+    depositRate: DataTypes.DECIMAL,
+    borrowRate: DataTypes.DECIMAL,
+    baseOraclePrice: DataTypes.DECIMAL,
+    depositIndex: DataTypes.DECIMAL,
+    borrowIndex: DataTypes.DECIMAL,
     mangoGroup: DataTypes.STRING,
     utilization: DataTypes.DECIMAL,
     time: DataTypes.DATE,

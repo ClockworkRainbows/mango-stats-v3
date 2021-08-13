@@ -64,8 +64,10 @@ async function fetchSpotStats() {
       totalBorrows: totalBorrows.toNumber(),
       depositRate: mangoGroup.getDepositRate(index).toNumber(),
       borrowRate: mangoGroup.getBorrowRate(index).toNumber(),
+      depositIndex: mangoGroup.rootBankAccounts[index].depositIndex.toNumber(),
+      borrowIndex: mangoGroup.rootBankAccounts[index].borrowIndex.toNumber(),
       utilization: totalDeposits.gt(I80F48.fromNumber(0)) ? totalBorrows.div(totalDeposits).toNumber() : 0,
-      baseOraclePrice: mangoCache.priceCache[index].price.toNumber(),
+      baseOraclePrice: mangoGroup.getPrice(index, mangoCache).toNumber(),
     }
   })
   try {
@@ -82,7 +84,6 @@ async function fetchPerpStats() {
   const mangoGroup = await client.getMangoGroup(groupConfig.publicKey)
   const mangoCache = await mangoGroup.loadCache(connection)
   const perpMarkets = await loadPerpMarkets(connection, groupConfig)
-  console.log("6")
 
   const perpMarketStats = perpMarkets.map((perpMarket, index) => {
     return {
@@ -93,6 +94,12 @@ async function fetchPerpStats() {
       shortFunding: perpMarket.shortFunding.toNumber(),
       openInterest: perpMarket.openInterest.toNumber(),
       baseOraclePrice: mangoCache.priceCache[index].price.toNumber(),
+      feesAccrued: perpMarket.feesAccrued.toNumber(),
+      mngoLeft: perpMarket.liquidityMiningInfo.mngoLeft.toNumber(),
+      mngoPerPeriod: perpMarket.liquidityMiningInfo.mngoPerPeriod.toNumber(),
+      rate: perpMarket.liquidityMiningInfo.rate.toNumber(),
+      maxDepthBps: perpMarket.liquidityMiningInfo.maxDepthBps.toNumber(),
+      periodStart: perpMarket.liquidityMiningInfo.periodStart.toNumber(),
     }
   })
 

@@ -10,9 +10,11 @@ module.exports = {
         mangoGroup: {
           type: Sequelize.STRING,
         },
+        depositIndex: Sequelize.DECIMAL,
         depositRate: {
           type: Sequelize.DECIMAL,
         },
+        borrowIndex: Sequelize.DECIMAL,
         borrowRate: {
           type: Sequelize.DECIMAL,
         },

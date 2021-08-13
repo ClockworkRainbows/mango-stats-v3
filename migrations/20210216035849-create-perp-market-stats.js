@@ -22,6 +22,24 @@ module.exports = {
         baseOraclePrice: {
           type: Sequelize.DECIMAL,
         },
+        feesAccrued: {
+          type: Sequelize.DECIMAL,
+        },
+        mngoLeft: {
+          type: Sequelize.DECIMAL,
+        },
+        mngoPerPeriod: {
+          type: Sequelize.DECIMAL,
+        },
+        rate: {
+          type: Sequelize.DECIMAL,
+        },
+        maxDepthBps: {
+          type: Sequelize.DECIMAL,
+        },
+        periodStart: {
+          type: Sequelize.DATE,
+        },
         time: {
           type: Sequelize.DATE,
         },

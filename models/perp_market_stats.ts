@@ -5,35 +5,17 @@ const PerpMarketStats = db.sequelize.define(
   "perp_market_stats",
   {
     name: { type: DataTypes.STRING, allowNull: false },
-    longFunding: {
-      type: DataTypes.DECIMAL,
-      get() {
-        const value = this.getDataValue("longFunding")
-        return value ? parseFloat(value) : null
-      },
-    },
-    shortFunding: {
-      type: DataTypes.DECIMAL,
-      get() {
-        const value = this.getDataValue("shortFunding")
-        return value ? parseFloat(value) : null
-      },
-    },
-    openInterest: {
-      type: DataTypes.DECIMAL,
-      get() {
-        const value = this.getDataValue("openInterest")
-        return value === null ? null : parseFloat(value)
-      },
-    },
-    baseOraclePrice: {
-      type: DataTypes.DECIMAL,
-      get() {
-        const value = this.getDataValue("baseOraclePrice")
-        return value === null ? null : parseFloat(value)
-      },
-    },
     mangoGroup: DataTypes.STRING,
+    longFunding: DataTypes.DECIMAL,
+    shortFunding: DataTypes.DECIMAL,
+    openInterest: DataTypes.DECIMAL,
+    baseOraclePrice: DataTypes.DECIMAL,
+    feesAccrued: DataTypes.DECIMAL,
+    mngoLeft: DataTypes.DECIMAL,
+    mngoPerPeriod: DataTypes.DECIMAL,
+    rate: DataTypes.DECIMAL,
+    maxDepthBps: DataTypes.DECIMAL,
+    periodStart: DataTypes.DECIMAL,
     time: DataTypes.DATE,
   },
   {
