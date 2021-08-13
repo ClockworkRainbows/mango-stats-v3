@@ -32,7 +32,7 @@ const SPOT_INTERVAL = 60 * SECONDS
 const clusterUrl = CLUSTER_URLS.find((c) => c.name === cluster)
 const connection = new Connection(clusterUrl.url, "singleGossip")
 const config = new Config(IDS)
-const groupConfig = config.getGroup(cluster, "mango_test_v3.8")
+const groupConfig = config.getGroup(cluster, "devnet.1")
 const client = new MangoClient(connection, groupConfig.mangoProgramId)
 
 const loadPerpMarkets = async (connection, groupConfig: GroupConfig) => {
