@@ -101,7 +101,7 @@ async function fetchPerpStats() {
       mngoPerPeriod: perpMarket.liquidityMiningInfo.mngoPerPeriod.toNumber(),
       rate: perpMarket.liquidityMiningInfo.rate.toNumber(),
       maxDepthBps: perpMarket.liquidityMiningInfo.maxDepthBps.toNumber(),
-      periodStart: perpMarket.liquidityMiningInfo.periodStart.toNumber(),
+      periodStart: new Date(perpMarket.liquidityMiningInfo.periodStart.toNumber() * 1000),
     }
   })
 
@@ -109,7 +109,7 @@ async function fetchPerpStats() {
     await PerpMarketStats.bulkCreate(perpMarketStats)
     console.log("perp stats inserted")
   } catch (err) {
-    console.log("failed to insert spot stats", `${err}`)
+    console.log("failed to insert perp stats", `${err}`)
   } finally {
     setTimeout(fetchPerpStats, PERP_INTERVAL)
   }
