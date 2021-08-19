@@ -1,6 +1,7 @@
 import { Connection } from "@solana/web3.js"
 import {
   Config,
+  Cluster,
   getMultipleAccounts,
   GroupConfig,
   I80F48,
@@ -14,7 +15,7 @@ import SpotMarketStats from "../models/spot_market_stats"
 
 const CLUSTER_URLS = [
   {
-    name: "mainnet-beta",
+    name: "mainnet",
     url: "https://mango.rpcpool.com/",
     websocket: "https://mango.rpcpool.com/",
   },
@@ -24,15 +25,16 @@ const CLUSTER_URLS = [
     websocket: "https://api.devnet.solana.com",
   },
 ]
-type CLUSTER_TYPE = "devnet" | "mainnet-beta"
-const cluster = (process.env.CLUSTER || "devnet") as CLUSTER_TYPE
+
+const cluster = (process.env.CLUSTER || "devnet") as Cluster
+const groupName = (process.env.GROUP || "devnet.1") as string
 const SECONDS = 1000
 const PERP_INTERVAL = 10 * SECONDS
 const SPOT_INTERVAL = 60 * SECONDS
 const clusterUrl = CLUSTER_URLS.find((c) => c.name === cluster)
 const connection = new Connection(clusterUrl.url, "singleGossip")
 const config = new Config(IDS)
-const groupConfig = config.getGroup(cluster, "devnet.1")
+const groupConfig = config.getGroup(cluster, groupName)
 const client = new MangoClient(connection, groupConfig.mangoProgramId)
 
 const loadPerpMarkets = async (connection, groupConfig: GroupConfig) => {
