@@ -30,7 +30,7 @@ const cluster = (process.env.CLUSTER || "devnet") as Cluster
 const groupName = (process.env.GROUP || "devnet.1") as string
 const SECONDS = 1000
 const PERP_INTERVAL = 10 * SECONDS
-const SPOT_INTERVAL = 60 * SECONDS
+const SPOT_INTERVAL = 20 * SECONDS
 const clusterUrl = CLUSTER_URLS.find((c) => c.name === cluster)
 const connection = new Connection(clusterUrl.url, "singleGossip")
 const config = new Config(IDS)
