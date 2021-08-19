@@ -101,7 +101,7 @@ async function fetchPerpStats() {
       mngoPerPeriod: perpMarket.liquidityMiningInfo.mngoPerPeriod.toNumber(),
       rate: perpMarket.liquidityMiningInfo.rate.toNumber(),
       maxDepthBps: perpMarket.liquidityMiningInfo.maxDepthBps.toNumber(),
-      periodStart: new Date(perpMarket.liquidityMiningInfo.periodStart.toNumber() * 1000),
+      periodStart: new Date(perpMarket.liquidityMiningInfo.periodStart.toNumber() * 1000).toISOString(),
     }
   })
 
