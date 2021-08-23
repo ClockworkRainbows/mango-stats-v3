@@ -9,6 +9,8 @@ import {
   MangoClient,
   PerpMarket,
   PerpMarketLayout,
+  getMarketIndexBySymbol,
+  QUOTE_INDEX,
 } from "@blockworks-foundation/mango-client"
 import PerpMarketStats from "../models/perp_market_stats"
 import SpotMarketStats from "../models/spot_market_stats"
@@ -55,21 +57,23 @@ async function fetchSpotStats() {
   // TODO: reduce calls in loadRootBanks
   await mangoGroup.loadRootBanks(connection)
 
-  const spotMarketStats = groupConfig.spotMarkets.map((spotMarket, index) => {
-    const totalDeposits = mangoGroup.getUiTotalDeposit(index)
-    const totalBorrows = mangoGroup.getUiTotalBorrow(index)
+  const spotMarketStats = groupConfig.tokens.map((token) => {
+    let tokenIndex = getMarketIndexBySymbol(groupConfig, token.symbol)
+    tokenIndex = tokenIndex === -1 ? QUOTE_INDEX : tokenIndex
+    const totalDeposits = mangoGroup.getUiTotalDeposit(tokenIndex)
+    const totalBorrows = mangoGroup.getUiTotalBorrow(tokenIndex)
     return {
       time: new Date(),
-      name: groupConfig.spotMarkets[index].name,
+      name: token.symbol,
       mangoGroup: groupConfig.name,
       totalDeposits: totalDeposits.toNumber(),
       totalBorrows: totalBorrows.toNumber(),
-      depositRate: mangoGroup.getDepositRate(index).toNumber(),
-      borrowRate: mangoGroup.getBorrowRate(index).toNumber(),
-      depositIndex: mangoGroup.rootBankAccounts[index].depositIndex.toNumber(),
-      borrowIndex: mangoGroup.rootBankAccounts[index].borrowIndex.toNumber(),
+      depositRate: mangoGroup.getDepositRate(tokenIndex).toNumber(),
+      borrowRate: mangoGroup.getBorrowRate(tokenIndex).toNumber(),
+      depositIndex: mangoGroup.rootBankAccounts[tokenIndex].depositIndex.toNumber(),
+      borrowIndex: mangoGroup.rootBankAccounts[tokenIndex].borrowIndex.toNumber(),
       utilization: totalDeposits.gt(I80F48.fromNumber(0)) ? totalBorrows.div(totalDeposits).toNumber() : 0,
-      baseOraclePrice: mangoGroup.getPrice(index, mangoCache).toNumber(),
+      baseOraclePrice: mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
     }
   })
   try {
@@ -95,9 +99,7 @@ async function fetchPerpStats() {
       longFunding: perpMarket.longFunding.toNumber(),
       shortFunding: perpMarket.shortFunding.toNumber(),
       openInterest: perpMarket.openInterest.toNumber(),
-      baseOraclePrice: mangoCache.priceCache[
-        groupConfig.perpMarkets[index].marketIndex
-      ].price.toNumber(),
+      baseOraclePrice: mangoCache.priceCache[groupConfig.perpMarkets[index].marketIndex].price.toNumber(),
       feesAccrued: perpMarket.feesAccrued.toNumber(),
       mngoLeft: perpMarket.liquidityMiningInfo.mngoLeft.toNumber(),
       mngoPerPeriod: perpMarket.liquidityMiningInfo.mngoPerPeriod.toNumber(),
