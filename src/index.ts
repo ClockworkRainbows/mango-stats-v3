@@ -25,7 +25,7 @@ app.get("/spot", async (req, res) => {
           avg("utilization")::float AS "utilization", 
           avg("depositRate")::float AS "depositRate", 
           avg("borrowRate")::float AS "borrowRate", 
-          avg("baseOraclePrice)::float AS "baseOraclePrice",
+          avg("baseOraclePrice")::float AS "baseOraclePrice",
           min("time") AS "time"
         FROM spot_market_stats
         WHERE time > current_date - interval '90' day AND "mangoGroup" = :mangoGroup
