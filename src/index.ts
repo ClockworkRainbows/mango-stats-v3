@@ -83,7 +83,12 @@ app.get("/spot/change/24", async (req, res) => {
 app.get("/perp/funding_rate", async (req, res) => {
   try {
     const market = req.query.market as string
+    const mangoGroup = req.query.mangoGroup as string
+
     if (!market) {
+      throw new Error("Missing mangoGroup param")
+    }
+    if (!mangoGroup) {
       throw new Error("Missing mangoGroup param")
     }
 
@@ -95,9 +100,9 @@ app.get("/perp/funding_rate", async (req, res) => {
           "baseOraclePrice",
           "time"
         FROM perp_market_stats
-        WHERE time > NOW() - interval '1 hour' AND "name" = :market`,
+        WHERE time > NOW() - interval '1 hour' AND "name" = :market AND "mangoGroup" = :mangoGroup`,
       {
-        replacements: { market },
+        replacements: { market, mangoGroup },
         type: QueryTypes.SELECT,
       }
     )
