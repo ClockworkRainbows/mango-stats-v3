@@ -18,7 +18,7 @@ import SpotMarketStats from "../models/spot_market_stats"
 const CLUSTER_URLS = [
   {
     name: "mainnet",
-    url: "https://mango.rpcpool.com/",
+    url: process.env.ENDPOINT || "https://mango.rpcpool.com/",
     websocket: "https://mango.rpcpool.com/",
   },
   {
