@@ -52,31 +52,32 @@ const loadPerpMarkets = async (connection, groupConfig: GroupConfig) => {
 }
 
 async function fetchSpotStats() {
-  const mangoGroup = await client.getMangoGroup(groupConfig.publicKey)
-  const mangoCache = await mangoGroup.loadCache(connection)
-  // TODO: reduce calls in loadRootBanks
-  await mangoGroup.loadRootBanks(connection)
-
-  const spotMarketStats = groupConfig.tokens.map((token) => {
-    let tokenIndex = getMarketIndexBySymbol(groupConfig, token.symbol)
-    tokenIndex = tokenIndex === -1 ? QUOTE_INDEX : tokenIndex
-    const totalDeposits = mangoGroup.getUiTotalDeposit(tokenIndex)
-    const totalBorrows = mangoGroup.getUiTotalBorrow(tokenIndex)
-    return {
-      time: new Date(),
-      name: token.symbol,
-      mangoGroup: groupConfig.name,
-      totalDeposits: totalDeposits.toNumber(),
-      totalBorrows: totalBorrows.toNumber(),
-      depositRate: mangoGroup.getDepositRate(tokenIndex).toNumber(),
-      borrowRate: mangoGroup.getBorrowRate(tokenIndex).toNumber(),
-      depositIndex: mangoGroup.rootBankAccounts[tokenIndex].depositIndex.toNumber(),
-      borrowIndex: mangoGroup.rootBankAccounts[tokenIndex].borrowIndex.toNumber(),
-      utilization: totalDeposits.gt(I80F48.fromNumber(0)) ? totalBorrows.div(totalDeposits).toNumber() : 0,
-      baseOraclePrice: mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
-    }
-  })
   try {
+    const mangoGroup = await client.getMangoGroup(groupConfig.publicKey)
+    const mangoCache = await mangoGroup.loadCache(connection)
+    // TODO: reduce calls in loadRootBanks
+    await mangoGroup.loadRootBanks(connection)
+
+    const spotMarketStats = groupConfig.tokens.map((token) => {
+      let tokenIndex = getMarketIndexBySymbol(groupConfig, token.symbol)
+      tokenIndex = tokenIndex === -1 ? QUOTE_INDEX : tokenIndex
+      const totalDeposits = mangoGroup.getUiTotalDeposit(tokenIndex)
+      const totalBorrows = mangoGroup.getUiTotalBorrow(tokenIndex)
+      return {
+        time: new Date(),
+        name: token.symbol,
+        mangoGroup: groupConfig.name,
+        totalDeposits: totalDeposits.toNumber(),
+        totalBorrows: totalBorrows.toNumber(),
+        depositRate: mangoGroup.getDepositRate(tokenIndex).toNumber(),
+        borrowRate: mangoGroup.getBorrowRate(tokenIndex).toNumber(),
+        depositIndex: mangoGroup.rootBankAccounts[tokenIndex].depositIndex.toNumber(),
+        borrowIndex: mangoGroup.rootBankAccounts[tokenIndex].borrowIndex.toNumber(),
+        utilization: totalDeposits.gt(I80F48.fromNumber(0)) ? totalBorrows.div(totalDeposits).toNumber() : 0,
+        baseOraclePrice: mangoGroup.getPrice(tokenIndex, mangoCache).toNumber(),
+      }
+    })
+
     await SpotMarketStats.bulkCreate(spotMarketStats)
     console.log("spot stats inserted")
   } catch (err) {
@@ -87,29 +88,29 @@ async function fetchSpotStats() {
 }
 
 async function fetchPerpStats() {
-  const mangoGroup = await client.getMangoGroup(groupConfig.publicKey)
-  const mangoCache = await mangoGroup.loadCache(connection)
-  const perpMarkets = await loadPerpMarkets(connection, groupConfig)
-
-  const perpMarketStats = perpMarkets.map((perpMarket, index) => {
-    return {
-      time: new Date(),
-      name: groupConfig.perpMarkets[index].name,
-      mangoGroup: groupConfig.name,
-      longFunding: perpMarket.longFunding.toNumber(),
-      shortFunding: perpMarket.shortFunding.toNumber(),
-      openInterest: perpMarket.openInterest.toNumber(),
-      baseOraclePrice: mangoCache.priceCache[groupConfig.perpMarkets[index].marketIndex].price.toNumber(),
-      feesAccrued: perpMarket.feesAccrued.toNumber(),
-      mngoLeft: perpMarket.liquidityMiningInfo.mngoLeft.toNumber(),
-      mngoPerPeriod: perpMarket.liquidityMiningInfo.mngoPerPeriod.toNumber(),
-      rate: perpMarket.liquidityMiningInfo.rate.toNumber(),
-      maxDepthBps: perpMarket.liquidityMiningInfo.maxDepthBps.toNumber(),
-      periodStart: new Date(perpMarket.liquidityMiningInfo.periodStart.toNumber() * 1000).toISOString(),
-    }
-  })
-
   try {
+    const mangoGroup = await client.getMangoGroup(groupConfig.publicKey)
+    const mangoCache = await mangoGroup.loadCache(connection)
+    const perpMarkets = await loadPerpMarkets(connection, groupConfig)
+
+    const perpMarketStats = perpMarkets.map((perpMarket, index) => {
+      return {
+        time: new Date(),
+        name: groupConfig.perpMarkets[index].name,
+        mangoGroup: groupConfig.name,
+        longFunding: perpMarket.longFunding.toNumber(),
+        shortFunding: perpMarket.shortFunding.toNumber(),
+        openInterest: perpMarket.openInterest.toNumber(),
+        baseOraclePrice: mangoCache.priceCache[groupConfig.perpMarkets[index].marketIndex].price.toNumber(),
+        feesAccrued: perpMarket.feesAccrued.toNumber(),
+        mngoLeft: perpMarket.liquidityMiningInfo.mngoLeft.toNumber(),
+        mngoPerPeriod: perpMarket.liquidityMiningInfo.mngoPerPeriod.toNumber(),
+        rate: perpMarket.liquidityMiningInfo.rate.toNumber(),
+        maxDepthBps: perpMarket.liquidityMiningInfo.maxDepthBps.toNumber(),
+        periodStart: new Date(perpMarket.liquidityMiningInfo.periodStart.toNumber() * 1000).toISOString(),
+      }
+    })
+
     await PerpMarketStats.bulkCreate(perpMarketStats)
     console.log("perp stats inserted")
   } catch (err) {
