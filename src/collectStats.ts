@@ -14,6 +14,7 @@ import {
 } from "@blockworks-foundation/mango-client"
 import PerpMarketStats from "../models/perp_market_stats"
 import SpotMarketStats from "../models/spot_market_stats"
+import notify from "./notify"
 
 const CLUSTER_URLS = [
   {
@@ -81,6 +82,7 @@ async function fetchSpotStats() {
     await SpotMarketStats.bulkCreate(spotMarketStats)
     console.log("spot stats inserted")
   } catch (err) {
+    notify(`mango-stats-v3 perp stats ERROR: ${err}`)
     console.log("failed to insert spot stats", `${err}`)
   } finally {
     setTimeout(fetchSpotStats, SPOT_INTERVAL)
@@ -115,12 +117,14 @@ async function fetchPerpStats() {
     console.log("perp stats inserted")
   } catch (err) {
     console.log("failed to insert perp stats", `${err}`)
+    notify(`mango-stats-v3 spot stats ERROR: ${err}`)
   } finally {
     setTimeout(fetchPerpStats, PERP_INTERVAL)
   }
 }
 
 async function main() {
+  notify("mango-stats-v3 restarting")
   fetchPerpStats()
   fetchSpotStats()
 }
