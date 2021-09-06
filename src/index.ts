@@ -80,13 +80,47 @@ app.get("/spot/change/24", async (req, res) => {
   }
 })
 
+app.get("/perp", async (req, res) => {
+  try {
+    const mangoGroup = req.query.mangoGroup as string
+
+    if (!mangoGroup) {
+      throw new Error("Missing mangoGroup param")
+    }
+
+    const stats = await sequelize.query(
+      `SELECT time_bucket('60 minutes', time) AS "hourly", 
+          "name", 
+          first("longFunding", "time")::float AS "oldestLongFunding", 
+          first("shortFunding", "time")::float AS "oldestShortFunding",
+          last("longFunding", "time")::float AS "latestLongFunding", 
+          last("shortFunding", "time")::float AS "latestShortFunding", 
+          avg("openInterest")::float AS "openInterest", 
+          avg("baseOraclePrice")::float AS "baseOraclePrice",
+          min("time") AS "time"
+        FROM perp_market_stats
+        WHERE time > current_date - interval '90' day AND "mangoGroup" = :mangoGroup
+        GROUP BY "hourly", "name"
+        ORDER BY "hourly" ASC;`,
+      {
+        replacements: { mangoGroup },
+        type: QueryTypes.SELECT,
+      }
+    )
+
+    res.send(stats)
+  } catch (e) {
+    console.log("Error inserting data", e)
+  }
+})
+
 app.get("/perp/funding_rate", async (req, res) => {
   try {
     const market = req.query.market as string
     const mangoGroup = req.query.mangoGroup as string
 
     if (!market) {
-      throw new Error("Missing mangoGroup param")
+      throw new Error("Missing market param")
     }
     if (!mangoGroup) {
       throw new Error("Missing mangoGroup param")
