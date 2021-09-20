@@ -103,7 +103,7 @@ async function fetchPerpStats() {
         longFunding: perpMarket.longFunding.toNumber(),
         shortFunding: perpMarket.shortFunding.toNumber(),
         openInterest: perpMarket.openInterest.toNumber(),
-        baseOraclePrice: mangoCache.priceCache[groupConfig.perpMarkets[index].marketIndex].price.toNumber(),
+        baseOraclePrice: mangoGroup.getPrice(groupConfig.perpMarkets[index].marketIndex, mangoCache).toNumber(),
         feesAccrued: perpMarket.feesAccrued.toNumber(),
         mngoLeft: perpMarket.liquidityMiningInfo.mngoLeft.toNumber(),
         mngoPerPeriod: perpMarket.liquidityMiningInfo.mngoPerPeriod.toNumber(),
