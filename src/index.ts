@@ -22,6 +22,8 @@ app.get("/spot", async (req, res) => {
           "name", 
           avg("totalDeposits")::float AS "totalDeposits", 
           avg("totalBorrows")::float AS "totalBorrows", 
+          avg("depositIndex")::float AS "depositIndex",
+          avg("borrowIndex")::float AS "borrowIndex",
           avg("utilization")::float AS "utilization", 
           avg("depositRate")::float AS "depositRate", 
           avg("borrowRate")::float AS "borrowRate", 
