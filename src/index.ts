@@ -137,7 +137,7 @@ app.get("/perp/funding_rate", async (req, res) => {
           "time"
         FROM perp_market_stats
         WHERE time > NOW() - interval '1 hour' AND "name" = :market AND "mangoGroup" = :mangoGroup
-        ORDER BY time`,
+        ORDER BY time DESC`,
       {
         replacements: { market, mangoGroup },
         type: QueryTypes.SELECT,
