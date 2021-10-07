@@ -136,7 +136,8 @@ app.get("/perp/funding_rate", async (req, res) => {
           "baseOraclePrice",
           "time"
         FROM perp_market_stats
-        WHERE time > NOW() - interval '1 hour' AND "name" = :market AND "mangoGroup" = :mangoGroup`,
+        WHERE time > NOW() - interval '1 hour' AND "name" = :market AND "mangoGroup" = :mangoGroup
+        ORDER BY time`,
       {
         replacements: { market, mangoGroup },
         type: QueryTypes.SELECT,
