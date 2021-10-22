@@ -30,7 +30,7 @@ app.get("/spot", async (req, res) => {
           avg("baseOraclePrice")::float AS "baseOraclePrice",
           min("time") AS "time"
         FROM spot_market_stats
-        WHERE time > current_date - interval '90' day AND "mangoGroup" = :mangoGroup
+        WHERE time > current_date - interval '30' day AND "mangoGroup" = :mangoGroup
         GROUP BY "hourly", "name"
         ORDER BY "hourly" ASC;`,
       {
