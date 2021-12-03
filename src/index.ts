@@ -18,7 +18,7 @@ app.get("/spot", async (req, res) => {
     }
 
     const stats = await sequelize.query(
-      `SELECT time_bucket('60 minutes', time) AS "hourly", 
+      `SELECT time_bucket('4 hours', time) AS "hourly", 
           "name", 
           avg("totalDeposits")::float AS "totalDeposits", 
           avg("totalBorrows")::float AS "totalBorrows", 
